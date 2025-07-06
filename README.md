@@ -1,6 +1,6 @@
-# safely
+# trysafely
 
-[![npm version](https://badge.fury.io/js/safely.svg)](https://www.npmjs.com/package/safely)
+[![npm version](https://badge.fury.io/js/trysafely.svg)](https://www.npmjs.com/package/trysafely)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A robust asynchronous helper designed to simplify error handling by wrapping promises and functions to consistently return a `[result, error]` tuple. Say goodbye to repetitive `try...catch` blocks and embrace cleaner, more predictable async code.
@@ -16,21 +16,21 @@ A robust asynchronous helper designed to simplify error handling by wrapping pro
 ## 🚀 Installation
 
 ```bash
-npm install safely
+npm install trysafely
 # or
-yarn add safely
+yarn add trysafely
 # or
-pnpm add safely
+pnpm add trysafely
 ```
 
 ## 📖 Usage
 
 ### Basic Usage
 
-Wrap your asynchronous function in `safely` to get a `[data, error]` tuple.
+Wrap your asynchronous function in `trysafely` to get a `[data, error]` tuple.
 
 ```typescript
-import { tryCatch } from 'safely';
+import { trySafely } from 'trysafely';
 
 // Assume this function fetches user data and might throw or reject
 async function fetchUserDetails(userId: string): Promise<{ id: string; name: string }> {
@@ -49,7 +49,7 @@ async function fetchUserDetails(userId: string): Promise<{ id: string; name: str
 
 async function getUser() {
   console.log("--- Getting 'user123' ---");
-  const [user, err] = await tryCatch(() => fetchUserDetails("user123"));
+  const [user, err] = await trySafely(() => fetchUserDetails("user123"));
 
   if (err) {
     console.error("Failed to get user:", err.message);
@@ -58,7 +58,7 @@ async function getUser() {
   }
 
   console.log("\n--- Getting 'errorUser' (simulated failure) ---");
-  const [errorUser, errorErr] = await tryCatch(() => fetchUserDetails("errorUser"));
+  const [errorUser, errorErr] = await trySafely(() => fetchUserDetails("errorUser"));
 
   if (errorErr) {
     console.error("Failed to get error user:", errorErr.message); // Output: Network error during fetch!
@@ -67,7 +67,7 @@ async function getUser() {
   }
 
   console.log("\n--- Getting 'unknownUser' (synchronous throw) ---");
-  const [unknownUser, unknownErr] = await tryCatch(() => fetchUserDetails("unknownUser"));
+  const [unknownUser, unknownErr] = await trySafely(() => fetchUserDetails("unknownUser"));
 
   if (unknownErr) {
     console.error("Failed to get unknown user:", unknownErr.message); // Output: Invalid User ID format.
@@ -81,10 +81,10 @@ getUser();
 
 ### With `Promise.all`
 
-`safely` truly shines when managing multiple concurrent asynchronous operations, allowing you to gracefully handle partial failures without `Promise.all` short-circuiting.
+`trysafely` truly shines when managing multiple concurrent asynchronous operations, allowing you to gracefully handle partial failures without `Promise.all` short-circuiting.
 
 ```typescript
-import { tryCatch } from 'safely';
+import { trySafely } from 'trysafely';
 
 async function fetchSalesData(): Promise<number[]> {
   await new Promise(resolve => setTimeout(resolve, 150));
@@ -107,9 +107,9 @@ async function fetchAnalyticsSummary(): Promise<any> {
 async function loadDashboard() {
   console.log("\n--- Loading Dashboard Data ---");
   const [salesResult, inventoryResult, analyticsResult] = await Promise.all([
-    tryCatch(() => fetchSalesData()),
-    tryCatch(() => fetchInventoryData()),
-    tryCatch(() => fetchAnalyticsSummary()),
+    trySafely(() => fetchSalesData()),
+    trySafely(() => fetchInventoryData()),
+    trySafely(() => fetchAnalyticsSummary()),
   ]);
 
   const [sales, salesErr] = salesResult;
@@ -140,9 +140,9 @@ async function loadDashboard() {
 loadDashboard();
 ```
 
-## 💡 Why safely?
+## 💡 Why trysafely?
 
-Traditional `try...catch` blocks can become verbose, especially when dealing with many async operations or `Promise.all`. `safely` provides a functional alternative, aligning with common patterns found in languages like Go (e.g., `value, err := func()`) where errors are returned as explicit values rather than thrown exceptions. This leads to:
+Traditional `try...catch` blocks can become verbose, especially when dealing with many async operations or `Promise.all`. `trysafely` provides a functional alternative, aligning with common patterns found in languages like Go (e.g., `value, err := func()`) where errors are returned as explicit values rather than thrown exceptions. This leads to:
 
 *   **Readability:** Easier to follow the happy path and immediately see where errors are handled.
 *   **Predictability:** Your function will always resolve, never reject, making subsequent `await` calls safer.
@@ -150,7 +150,7 @@ Traditional `try...catch` blocks can become verbose, especially when dealing wit
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you have suggestions, bug reports, or want to contribute code, please feel free to open an issue or pull request on the [GitHub repository](https://github.com/EllyBax/safely.git).
+Contributions are welcome! If you have suggestions, bug reports, or want to contribute code, please feel free to open an issue or pull request on the [GitHub repository](https://github.com/EllyBax/trysafely.git).
 
 ## 🔮 What's Next?
 - [ ] Add synchronous function support
@@ -158,4 +158,4 @@ Contributions are welcome! If you have suggestions, bug reports, or want to cont
 
 ## 📄 License
 
-`safely` is [MIT licensed](LICENSE).
+`trysafely` is [MIT licensed](LICENSE).
