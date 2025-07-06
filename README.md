@@ -140,7 +140,7 @@ async function loadDashboard() {
 loadDashboard();
 ```
 
-## 💡 Why `safely`?
+## 💡 Why safely?
 
 Traditional `try...catch` blocks can become verbose, especially when dealing with many async operations or `Promise.all`. `safely` provides a functional alternative, aligning with common patterns found in languages like Go (e.g., `value, err := func()`) where errors are returned as explicit values rather than thrown exceptions. This leads to:
 
@@ -152,9 +152,9 @@ Traditional `try...catch` blocks can become verbose, especially when dealing wit
 
 Contributions are welcome! If you have suggestions, bug reports, or want to contribute code, please feel free to open an issue or pull request on the [GitHub repository](https://github.com/EllyBax/safely.git).
 
-## What's Next?
+## 🔮 What's Next?
 - [ ] Add synchronous function support
-- [ ] Add more documentation
+- [ ] Add documentation
 
 ## 📄 License
 
