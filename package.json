@@ -29,6 +29,7 @@
     "email": "elly@jrdev.org",
     "name": "Elly B"
   },
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"
