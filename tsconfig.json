@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    /* Project Options */
+    "target": "ES2019", // Or a more modern target like "ES2020", "ES2021", "ESNext" depending on Node.js version you target. ES2019 is a good balance for widely supported async/await features.
+    "module": "CommonJS", // Use CommonJS for Node.js modules. For modern Node.js + ESM, you might use "ESNext" and add "type": "module" to package.json.
+    "lib": ["ES2019", "ES2015"], // Include built-in libraries for the chosen target.
+    "outDir": "./dist", // Specify the output directory for compiled JavaScript and declaration files.
+    "rootDir": "./src", // Specify the root directory of your TypeScript source files.
+    "declaration": true, // Generate declaration (.d.ts) files for TypeScript consumers.
+    "declarationMap": true, // Generate sourcemaps for declaration files (useful for debugging in consumers).
+    "sourceMap": true, // Generate sourcemap (.map) files for debugging compiled JavaScript.
+
+    /* Strict Type-Checking Options */
+    "strict": true, // Enable all strict type-checking options. Recommended for robust code.
+    "noImplicitAny": true, // Ensure no implicit 'any' types are used.
+    "strictNullChecks": true, // Enforce strict null and undefined checks.
+    "noUnusedLocals": true, // Report errors on unused local variables.
+    "noUnusedParameters": true, // Report errors on unused parameters.
+    "noImplicitReturns": true, // Ensure all code paths in a function return a value.
+    "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statements.
+
+    /* Module Resolution Options */
+    "moduleResolution": "node", // Node.js style module resolution.
+    "baseUrl": "./", // Base directory to resolve non-relative module names.
+    "esModuleInterop": true, // Enables 'allowSyntheticDefaultImports' for better interop with CommonJS and ES Modules.
+    "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased file names.
+
+    /* Emit Options */
+    "newLine": "lf", // Ensure consistent line endings (LF is standard for Git/Unix).
+    "downlevelIteration": true, // Provide full support for iterables in `for-of`, spread, etc. when targeting older environments.
+
+    /* Advanced Options */
+    "skipLibCheck": true // Skip type checking of all declaration files (*.d.ts). Reduces compile time.
+  },
+  "include": [
+    "src/**/*" // Only include files within the 'src' directory.
+  ],
+  "exclude": [
+    "node_modules", // Exclude node_modules for faster compilation and to avoid including dependencies in your own output.
+    "dist" // Exclude the output directory to prevent infinite compilation loops or including previous builds.
+  ]
+}
