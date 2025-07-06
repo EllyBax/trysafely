@@ -8,7 +8,7 @@
  *   The first element is the successful result (or null if an error occurred).
  *   The second element is the error (or null if the operation was successful).
  */
-export async function tryCatch<T>(
+export default async function trySafely<T>(
   fn: () => Promise<T>,
 ): Promise<[T | null, Error | null]> {
   try {

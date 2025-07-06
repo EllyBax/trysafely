@@ -30,7 +30,7 @@ pnpm add trysafely
 Wrap your asynchronous function in `trysafely` to get a `[data, error]` tuple.
 
 ```typescript
-import { trySafely } from 'trysafely';
+import trySafely from 'trysafely';
 
 // Assume this function fetches user data and might throw or reject
 async function fetchUserDetails(userId: string): Promise<{ id: string; name: string }> {
@@ -84,7 +84,7 @@ getUser();
 `trysafely` truly shines when managing multiple concurrent asynchronous operations, allowing you to gracefully handle partial failures without `Promise.all` short-circuiting.
 
 ```typescript
-import { trySafely } from 'trysafely';
+import trySafely from 'trysafely';
 
 async function fetchSalesData(): Promise<number[]> {
   await new Promise(resolve => setTimeout(resolve, 150));
