@@ -21,6 +21,14 @@
     "clean code",
     "exceptions"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EllyBax/safely.git"
+  },
+  "author": {
+    "email": "elly@jrdev.org",
+    "name": "Elly B"
+  },
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"
