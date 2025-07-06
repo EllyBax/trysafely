@@ -1,0 +1,34 @@
+{
+  "name": "safely",
+  "version": "1.0.0",
+  "description": "A robust async helper to wrap promises and functions, returning [result, error] for graceful error handling.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "error handling",
+    "try-catch",
+    "async-await",
+    "promise",
+    "error-first",
+    "tuple",
+    "result",
+    "utility",
+    "helper",
+    "robust",
+    "safer",
+    "typescript",
+    "node",
+    "clean code",
+    "exceptions"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
