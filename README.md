@@ -38,7 +38,7 @@ pnpm add trysafely
 Wrap your asynchronous function in `trysafely` to get a `[data, error]` tuple. This form is ideal when you want to defer the execution of your async operation.
 
 ```typescript
-import trySafely from 'trysafely';
+import { trySafely } from 'trysafely';
 
 // Assume this function fetches user data and might throw or reject
 async function fetchUserDetails(userId: string): Promise<{ id: string; name: string }> {
@@ -94,8 +94,8 @@ getUser();
 For situations where you already have a `Promise` instance, import `tryPromise` and pass the promise directly. This is often more concise.
 
 ```typescript
-import trySafely from 'trysafely'; // Still need trySafely for the other import
-import tryPromise from 'trysafely/promises'; // Import the specific tryPromise helper
+import { trySafely } from 'trysafely'; // Still need trySafely for the other import
+import { tryPromise } from 'trysafely/promises'; // Import the specific tryPromise helper
 
 // Assume these functions return promises directly
 async function fetchConfig(): Promise<{ theme: string; debug: boolean }> {
@@ -141,8 +141,8 @@ retrieveData();
 Both `trysafely` and `tryPromise` truly shine when managing multiple concurrent asynchronous operations, allowing you to gracefully handle partial failures without `Promise.all` short-circuiting. Use the one that best fits the immediate availability of your promises.
 
 ```typescript
-import trySafely from 'trysafely';
-import tryPromise from 'trysafely/promises'; // Import tryPromise if you're using it
+import { trySafely } from 'trysafely';
+import { tryPromise } from 'trysafely/promises'; // Import tryPromise if you're using it
 
 async function fetchSalesData(): Promise<number[]> {
   await new Promise(resolve => setTimeout(resolve, 150));

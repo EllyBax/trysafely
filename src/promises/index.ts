@@ -9,7 +9,7 @@
  *   The second element is the error (or null if the operation was successful).
  */
 
-export default async function tryPromise<T>(
+export async function tryPromise<T>(
   promise: Promise<T>,
 ): Promise<[T | null, Error | null]> {
   try {
