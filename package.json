@@ -4,6 +4,19 @@
   "description": "A robust async helper to wrap promises and functions, returning [result, error] for graceful error handling.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./promises": {
+      "types": "./dist/promises.d.ts",
+      "default": "./dist/promises.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "error handling",
     "try-catch",
@@ -34,9 +47,6 @@
     "build": "tsc",
     "prepublishOnly": "npm run build"
   },
-  "files": [
-    "dist"
-  ],
   "devDependencies": {
     "typescript": "^5.8.3"
   }
