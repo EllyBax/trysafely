@@ -10,8 +10,8 @@
       "default": "./dist/index.js"
     },
     "./promises": {
-      "types": "./dist/promises.d.ts",
-      "default": "./dist/promises.js"
+      "types": "./dist/promises/index.d.ts",
+      "default": "./dist/promises/index.js"
     }
   },
   "files": [
