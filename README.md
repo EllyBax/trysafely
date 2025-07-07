@@ -94,7 +94,6 @@ getUser();
 For situations where you already have a `Promise` instance, import `tryPromise` and pass the promise directly. This is often more concise.
 
 ```typescript
-import { trySafely } from 'trysafely'; // Still need trySafely for the other import
 import { tryPromise } from 'trysafely/promises'; // Import the specific tryPromise helper
 
 // Assume these functions return promises directly
