@@ -1,7 +1,6 @@
 
 /**
- * A helper function to wrap a promise and return a tuple of [result, error].
- * This differs from the one above since it requires you to call just the promise.
+ * A helper function to wrap a promise instance and return a tuple of [result, error].
  *
  * @template T The expected type of the successful result.
  * @param {Promise<T>} promise The promise to execute.
