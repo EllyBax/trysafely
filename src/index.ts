@@ -1,22 +1,37 @@
+interface SuccessResult<T> {
+  result: T;
+  error: null;
+}
+
+interface ErrorResult {
+  result: null;
+  error: Error;
+}
+
+export type Result<T> = SuccessResult<T> | ErrorResult;
+
 /**
- * A helper function to wrap an async operation and return a tuple of [result, error].
- * This avoids the need for explicit try...catch blocks in the caller.
+ * A robust asynchronous helper designed to simplify error handling by wrapping
+ * a function that returns a Promise. It consistently returns a `Result<T>` object
+ * (`{ result: T, error: null }` on success or `{ result: null, error: Error }` on failure),
+ * allowing consumers to destructure and handle errors explicitly.
  *
- * @template T The expected type of the successful result.
- * @param {() => Promise<T>} fn The asynchronous function to execute.
- * @returns {Promise<[T | null, Error | null]>} A Promise that resolves to a tuple.
- *   The first element is the successful result (or null if an error occurred).
- *   The second element is the error (or null if the operation was successful).
+ * This function defers the execution of the async operation until `trySafely` is invoked,
+ * and also catches synchronous errors that might occur when `fn` is called.
+ *
+ * @template T The expected type of the successful asynchronous result.
+ * @param {() => Promise<T>} fn The asynchronous function to execute. This function
+ *   should return a Promise that resolves with type T or rejects with an error.
+ * @returns {Promise<Result<T>>} A Promise that resolves to a `Result<T>` object.
+ *   - On success: `{ result: T, error: null }`
+ *   - On failure: `{ result: null, error: Error }`
  */
-export async function trySafely<T>(
-  fn: () => Promise<T>,
-): Promise<[T | null, Error | null]> {
+export async function trySafely<T>(fn: () => Promise<T>): Promise<Result<T>> {
   try {
-    const result = await fn();
-    return [result, null];
+    const data = await fn();
+    return { result: data, error: null };
   } catch (error: any) {
-    // It's good practice to ensure the error is an Error object if possible
     const err = error instanceof Error ? error : new Error(String(error));
-    return [null, err];
+    return { result: null, error: err };
   }
 }

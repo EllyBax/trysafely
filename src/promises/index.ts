@@ -1,23 +1,28 @@
+import { Result } from "src";
 
 /**
- * A helper function to wrap a promise instance and return a tuple of [result, error].
+ * A robust asynchronous helper designed to simplify error handling by wrapping
+ * an already-instantiated Promise. It consistently returns a `Result<T>` object
+ * (`{ result: T, error: null }` on success or `{ result: null, error: Error }` on failure),
+ * allowing consumers to destructure and handle errors explicitly.
  *
- * @template T The expected type of the successful result.
- * @param {Promise<T>} promise The promise to execute.
- * @returns {Promise<[T | null, Error | null]>} A Promise that resolves to a tuple.
- *   The first element is the successful result (or null if an error occurred).
- *   The second element is the error (or null if the operation was successful).
+ * This function is concise for direct use with promises that are already created and
+ * potentially executing.
+ *
+ * @template T The expected type of the successful asynchronous result.
+ * @param {Promise<T>} promise The promise instance to execute and handle.
+ * @returns {Promise<Result<T>>} A Promise that resolves to a `Result<T>` object.
+ *   - On success: `{ result: T, error: null }`
+ *   - On failure: `{ result: null, error: Error }`
  */
-
-export async function tryPromise<T>(
+export default async function tryPromise<T>(
   promise: Promise<T>,
-): Promise<[T | null, Error | null]> {
+): Promise<Result<T>> {
   try {
-    const result = await promise;
-    return [result, null];
+    const data = await promise;
+    return { result: data, error: null }
   } catch (error: any) {
-    // It's good practice to ensure the error is an Error object if possible
     const err = error instanceof Error ? error : new Error(String(error));
-    return [null, err];
+    return { result: null, error: err }
   }
 }
