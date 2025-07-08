@@ -3,16 +3,158 @@
 [![npm version](https://badge.fury.io/js/trysafely.svg)](https://www.npmjs.com/package/trysafely)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A robust asynchronous helper designed to simplify error handling by wrapping promises and functions to consistently return a `[result, error]` tuple. Say goodbye to repetitive `try...catch` blocks and embrace cleaner, more predictable async code.
+A robust asynchronous helper designed to simplify error handling by wrapping promises and functions to consistently return a predictable `{ result, error }` object. Say goodbye to repetitive `try...catch` blocks and embrace cleaner, more predictable async code.
 
 ## Features
 
 *   **Eliminate `try...catch` boilerplate:** Replace cumbersome blocks with a single, elegant function call.
-*   **Predictable `[result, error]` return:** Always receive a tuple, making error checks explicit and straightforward.
+*   **Predictable `{ result: T, error: null } | { result: null, error: Error }` return:** Always receive a structured object, making error checks explicit and straightforward.
 *   **Graceful Error Handling:** Easily manage both promise rejections and synchronous errors thrown during function execution.
 *   **TypeScript-friendly:** Fully typed for excellent developer experience and compile-time safety.
 *   **Lightweight:** Minimal overhead, focusing solely on simplifying async error patterns.
 *   **Dual API:** Choose between wrapping a function-returning-a-promise (`trysafely`) or an already-instantiated promise (`tryPromise`).
+
+## Usage
+
+`trysafely` offers two primary ways to handle your asynchronous operations:
+
+1.  **`trysafely(fn: () => Promise<T>)`**: For wrapping functions that return promises. This defers execution and catches synchronous errors.
+2.  **`tryPromise(promise: Promise<T>)`**: For directly wrapping an already-created promise.
+
+---
+
+### Using `trySafely` (Function Wrapper)
+
+Call `trySafely` with an arrow function that returns your Promise.
+
+```typescript
+import { trySafely } from 'trysafely';
+
+async function fetchData(): Promise<string> {
+  await new Promise(r => setTimeout(r, 50));
+  if (Math.random() > 0.5) return "Data fetched!";
+  throw new Error("Failed to fetch.");
+}
+
+async function runExample() {
+  const { result, error } = await trySafely(() => fetchData());
+
+  // Note: error is already typed as Error
+  if (error) {
+    console.error("Error:", error.message);
+  } else {
+    console.log("Success:", result);
+  }
+}
+runExample();
+```
+
+---
+
+### Using `tryPromise` (Promise Wrapper)
+
+Import `tryPromise` from `trysafely/promises` and pass an existing Promise directly.
+
+```typescript
+import { tryPromise } from 'trysafely/promises';
+
+async function validateInput(input: string): Promise<boolean> {
+  await new Promise(r => setTimeout(r, 50));
+  if (input.length > 5) return true;
+  throw new Error("Input too short.");
+}
+
+async function runExample() {
+  const { result, error } = await tryPromise(validateInput("hello world"));
+
+  if (error) {
+    console.error("Validation Error:", error.message);
+  } else {
+    console.log("Validation Success:", result);
+  }
+}
+runExample();
+```
+
+---
+
+### Renaming Variables on Destructuring
+
+You can easily rename the `result` and `error` properties to custom variable names using object destructuring aliasing.
+
+```typescript
+import { trySafely } from 'trysafely';
+
+async function getUserProfile(): Promise<{ name: string }> {
+  await new Promise(r => setTimeout(r, 50));
+  if (Math.random() > 0.5) return { name: "Alice" };
+  throw new Error("Profile not found.");
+}
+
+async function runExample() {
+  // Rename 'result' to 'user' and 'error' to 'userError'
+  const { result: user, error: userError } = await trySafely(() => getUserProfile());
+
+  if (userError) {
+    console.error("User Profile Error:", userError.message);
+  } else {
+    console.log("User Profile:", user.name);
+  }
+}
+runExample();
+```
+
+---
+
+### With `Promise.all`
+
+`trysafely` functions seamlessly with `Promise.all`, allowing you to await multiple operations concurrently and handle individual successes/failures.
+
+```typescript
+import { trySafely } from 'trysafely';
+import { tryPromise } from 'trysafely/promises';
+
+async function fetchProducts(): Promise<string[]> {
+  await new Promise(r => setTimeout(r, 70));
+  if (Math.random() > 0.3) return ["Laptop", "Monitor"];
+  throw new Error("Product API error.");
+}
+
+async function fetchOrders(): Promise<number[]> {
+  await new Promise(r => setTimeout(r, 80));
+  return [101, 102];
+}
+
+async function loadDashboardData() {
+  const [productsResp, ordersResp] = await Promise.all([
+    trySafely(() => fetchProducts()), // Using trySafely for function wrapper
+    tryPromise(fetchOrders())          // Using tryPromise for direct promise
+  ]);
+
+  if (productsResp.error) {
+    console.error("Products failed:", productsResp.error.message);
+  } else {
+    console.log("Products loaded:", productsResp.result);
+  }
+
+  if (ordersResp.error) {
+    console.error("Orders failed:", ordersResp.error.message); // This path unlikely for 'fetchOrders'
+  } else {
+    console.log("Orders loaded:", ordersResp.result);
+  }
+}
+loadDashboardData();
+```
+
+---
+
+## Why `trysafely`?
+
+Traditional `try...catch` blocks can become verbose, especially when dealing with many async operations or `Promise.all`. `trysafely` provides a functional alternative, aligning with common patterns found in languages like Go (e.g., `value, err := func()`) where errors are returned as explicit values rather than thrown exceptions. This leads to:
+
+*   **Readability:** Easier to follow the happy path and immediately see where errors are handled.
+*   **Predictability:** Your functions will always resolve, never reject, making subsequent `await` calls safer.
+*   **Maintainability:** Less nested code, simpler error propagation, and clearer responsibility.
 
 ## Installation
 
@@ -23,191 +165,6 @@ yarn add trysafely
 # or
 pnpm add trysafely
 ```
-
-## Usage
-
-`trysafely` offers two primary ways to handle your asynchronous operations:
-
-1.  **`trysafely(fn: () => Promise<T>)`**: For wrapping functions that return promises. This defers execution until `trysafely` is called and also catches synchronous errors that might occur when `fn` is invoked.
-2.  **`tryPromise(promise: Promise<T>)`**: For directly wrapping an already-created promise. This is more concise when the promise is immediately available and already executing.
-
----
-
-### Basic Usage with `trysafely` (Wrapping a Function)
-
-Wrap your asynchronous function in `trysafely` to get a `[data, error]` tuple. This form is ideal when you want to defer the execution of your async operation.
-
-```typescript
-import { trySafely } from 'trysafely';
-
-// Assume this function fetches user data and might throw or reject
-async function fetchUserDetails(userId: string): Promise<{ id: string; name: string }> {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 100));
-
-  if (userId === "user123") {
-    return { id: "user123", name: "Alice" };
-  } else if (userId === "errorUser") {
-    throw new Error("Network error during fetch!");
-  } else {
-    // This will be caught too! (synchronous throw)
-    throw "Invalid User ID format.";
-  }
-}
-
-async function getUser() {
-  console.log("--- Getting 'user123' with trysafely(() => ...) ---");
-  const [user, err] = await trySafely(() => fetchUserDetails("user123"));
-
-  if (err) {
-    console.error("Failed to get user:", err.message);
-  } else {
-    console.log("User data:", user); // Output: { id: 'user123', name: 'Alice' }
-  }
-
-  console.log("\n--- Getting 'errorUser' with trysafely(() => ...) (simulated failure) ---");
-  const [errorUser, errorErr] = await trySafely(() => fetchUserDetails("errorUser"));
-
-  if (errorErr) {
-    console.error("Failed to get error user:", errorErr.message); // Output: Network error during fetch!
-  } else {
-    console.log("Error user data:", errorUser);
-  }
-
-  console.log("\n--- Getting 'unknownUser' with trysafely(() => ...) (synchronous throw) ---");
-  const [unknownUser, unknownErr] = await trySafely(() => fetchUserDetails("unknownUser"));
-
-  if (unknownErr) {
-    console.error("Failed to get unknown user:", unknownErr.message); // Output: Invalid User ID format.
-  } else {
-    console.log("Unknown user data:", unknownUser);
-  }
-}
-
-getUser();
-```
-
----
-
-### Usage with `tryPromise` (Wrapping a Promise)
-
-For situations where you already have a `Promise` instance, import `tryPromise` and pass the promise directly. This is often more concise.
-
-```typescript
-import { tryPromise } from 'trysafely/promises'; // Import the specific tryPromise helper
-
-// Assume these functions return promises directly
-async function fetchConfig(): Promise<{ theme: string; debug: boolean }> {
-  await new Promise(resolve => setTimeout(resolve, 50));
-  return { theme: "dark", debug: false };
-}
-
-async function validateToken(token: string): Promise<boolean> {
-  await new Promise(resolve => setTimeout(resolve, 75));
-  if (token === "valid-token") {
-    return true;
-  }
-  throw new Error("Invalid token provided.");
-}
-
-async function retrieveData() {
-  console.log("\n--- Retrieving Data with tryPromise(promise) ---");
-
-  // Call the function directly to get the promise, then pass it to tryPromise
-  const [config, configErr] = await tryPromise(fetchConfig());
-
-  if (configErr) {
-    console.error("Failed to fetch config:", configErr.message);
-  } else {
-    console.log("Config loaded:", config); // Output: { theme: 'dark', debug: false }
-  }
-
-  const [tokenValid, tokenErr] = await tryPromise(validateToken("bad-token"));
-  if (tokenErr) {
-    console.error("Token validation failed:", tokenErr.message); // Output: Invalid token provided.
-  } else {
-    console.log("Token is valid:", tokenValid);
-  }
-}
-
-retrieveData();
-```
-
----
-
-### With `Promise.all`
-
-Both `trysafely` and `tryPromise` truly shine when managing multiple concurrent asynchronous operations, allowing you to gracefully handle partial failures without `Promise.all` short-circuiting. Use the one that best fits the immediate availability of your promises.
-
-```typescript
-import { trySafely } from 'trysafely';
-import { tryPromise } from 'trysafely/promises'; // Import tryPromise if you're using it
-
-async function fetchSalesData(): Promise<number[]> {
-  await new Promise(resolve => setTimeout(resolve, 150));
-  // Simulate occasional failure
-  if (Math.random() > 0.8) throw new Error("Sales API timeout");
-  return [100, 250, 300];
-}
-
-async function fetchInventoryData(): Promise<string[]> {
-  // assume a query fetching the list of items in the inventory
-  return await db.select().from(inventory)
-}
-
-async function fetchAnalyticsSummary(): Promise<any> {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  // Simulate consistent failure for demo
-  throw new Error("Analytics service unavailable");
-}
-
-async function loadDashboard() {
-  console.log("\n--- Loading Dashboard Data ---");
-  const [salesResult, inventoryResult, analyticsResult] = await Promise.all([
-    // Use trysafely for functions
-    trySafely(() => fetchSalesData()),
-    // Or tryPromise if you prefer to call it directly and pass the promise
-    tryPromise(fetchInventoryData()), // since fetchInventoryData returns Promise directly
-    trySafely(() => fetchAnalyticsSummary()),
-  ]);
-
-  const [sales, salesErr] = salesResult;
-  const [inventory, inventoryErr] = inventoryResult;
-  const [analytics, analyticsErr] = analyticsResult;
-
-  if (salesErr) {
-    console.error("❌ Failed to load Sales Data:", salesErr.message);
-  } else {
-    console.log("✅ Sales Data Loaded:", sales);
-  }
-
-  if (inventoryErr) {
-    console.error("❌ Failed to load Inventory Data:", inventoryErr.message);
-  } else {
-    console.log("✅ Inventory Data Loaded:", inventory);
-  }
-
-  if (analyticsErr) {
-    console.error("❌ Failed to load Analytics Summary:", analyticsErr.message);
-  } else {
-    console.log("✅ Analytics Summary Loaded:", analytics);
-  }
-
-  console.log("\nDashboard Load Complete.");
-}
-
-loadDashboard();
-```
-
----
-
-## Why `trysafely`?
-
-Traditional `try...catch` blocks can become verbose, especially when dealing with many async operations or `Promise.all`. `trysafely` provides a functional alternative, aligning with common patterns found in languages like Go (e.g., `value, err := func()`) where errors are returned as explicit values rather than thrown exceptions. This leads to:
-
-*   **Readability:** Easier to follow the happy path and immediately see where errors are handled.
-*   **Predictability:** Your function will always resolve, never reject, making subsequent `await` calls safer.
-*   **Maintainability:** Less nested code, simpler error propagation, and clearer responsibility.
 
 ## Contributing
 
