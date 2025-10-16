@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     /* Project Options */
-    "target": "ES2019", // Or a more modern target like "ES2020", "ES2021", "ESNext" depending on Node.js version you target. ES2019 is a good balance for widely supported async/await features.
-    "module": "CommonJS", // Use CommonJS for Node.js modules. For modern Node.js + ESM, you might use "ESNext" and add "type": "module" to package.json.
-    "lib": ["ES2019", "ES2015"], // Include built-in libraries for the chosen target.
+    "target": "ESNext", // Or a more modern target like "ES2020", "ES2021", "ESNext" depending on Node.js version you target. ES2019 is a good balance for widely supported async/await features.
+    "module": "ESNext",
+    "lib": ["ES2019", "DOM", "ES2015"], // Include built-in libraries for the chosen target.
     "outDir": "./dist", // Specify the output directory for compiled JavaScript and declaration files.
     "rootDir": "./src", // Specify the root directory of your TypeScript source files.
     "declaration": true, // Generate declaration (.d.ts) files for TypeScript consumers.

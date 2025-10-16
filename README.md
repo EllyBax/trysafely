@@ -1,160 +1,22 @@
 # trysafely
 
 [![npm version](https://badge.fury.io/js/trysafely.svg)](https://www.npmjs.com/package/trysafely)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+ [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A robust asynchronous helper designed to simplify error handling by wrapping promises and functions to consistently return a predictable `{ result, error }` object. Say goodbye to repetitive `try...catch` blocks and embrace cleaner, more predictable async code.
+> A zero-dependency utility to wrap async and sync functions into predictable `{ data, err }` results — goodbye `try...catch`, hello clarity!
+
+------
 
 ## Features
 
-*   **Eliminate `try...catch` boilerplate:** Replace cumbersome blocks with a single, elegant function call.
-*   **Predictable `{ result: T, error: null } | { result: null, error: Error }` return:** Always receive a structured object, making error checks explicit and straightforward.
-*   **Graceful Error Handling:** Easily manage both promise rejections and synchronous errors thrown during function execution.
-*   **TypeScript-friendly:** Fully typed for excellent developer experience and compile-time safety.
-*   **Lightweight:** Minimal overhead, focusing solely on simplifying async error patterns.
-*   **Dual API:** Choose between wrapping a function-returning-a-promise (`trysafely`) or an already-instantiated promise (`tryPromise`).
+- ✅ **Eliminate try/catch boilerplate**
+- 🔁 **Wrap sync or async functions**
+- 🧠 **Fully typed & TypeScript friendly**
+- 📦 **Lightweight, no dependencies**
+- 🎯 **Predictable result shape**: `{ data: T | null, err: Error | null }`
+- 🧪 **Easy testing & debugging**: No unhandled promise rejections
 
-## Usage
-
-`trysafely` offers two primary ways to handle your asynchronous operations:
-
-1.  **`trysafely(fn: () => Promise<T>)`**: For wrapping functions that return promises. This defers execution and catches synchronous errors.
-2.  **`tryPromise(promise: Promise<T>)`**: For directly wrapping an already-created promise.
-
----
-
-### Using `trySafely` (Function Wrapper)
-
-Call `trySafely` with an arrow function that returns your Promise.
-
-```typescript
-import { trySafely } from 'trysafely';
-
-async function fetchData(): Promise<string> {
-  await new Promise(r => setTimeout(r, 50));
-  if (Math.random() > 0.5) return "Data fetched!";
-  throw new Error("Failed to fetch.");
-}
-
-async function runExample() {
-  const { result, error } = await trySafely(() => fetchData());
-
-  // Note: error is already typed as Error
-  if (error) {
-    console.error("Error:", error.message);
-  } else {
-    console.log("Success:", result);
-  }
-}
-runExample();
-```
-
----
-
-### Using `tryPromise` (Promise Wrapper)
-
-Import `tryPromise` from `trysafely/promises` and pass an existing Promise directly.
-
-```typescript
-import { tryPromise } from 'trysafely/promises';
-
-async function validateInput(input: string): Promise<boolean> {
-  await new Promise(r => setTimeout(r, 50));
-  if (input.length > 5) return true;
-  throw new Error("Input too short.");
-}
-
-async function runExample() {
-  const { result, error } = await tryPromise(validateInput("hello world"));
-
-  if (error) {
-    console.error("Validation Error:", error.message);
-  } else {
-    console.log("Validation Success:", result);
-  }
-}
-runExample();
-```
-
----
-
-### Renaming Variables on Destructuring
-
-You can easily rename the `result` and `error` properties to custom variable names using object destructuring aliasing.
-
-```typescript
-import { trySafely } from 'trysafely';
-
-async function getUserProfile(): Promise<{ name: string }> {
-  await new Promise(r => setTimeout(r, 50));
-  if (Math.random() > 0.5) return { name: "Alice" };
-  throw new Error("Profile not found.");
-}
-
-async function runExample() {
-  // Rename 'result' to 'user' and 'error' to 'userError'
-  const { result: user, error: userError } = await trySafely(() => getUserProfile());
-
-  if (userError) {
-    console.error("User Profile Error:", userError.message);
-  } else {
-    console.log("User Profile:", user.name);
-  }
-}
-runExample();
-```
-
----
-
-### With `Promise.all`
-
-`trysafely` functions seamlessly with `Promise.all`, allowing you to await multiple operations concurrently and handle individual successes/failures.
-
-```typescript
-import { trySafely } from 'trysafely';
-import { tryPromise } from 'trysafely/promises';
-
-async function fetchProducts(): Promise<string[]> {
-  await new Promise(r => setTimeout(r, 70));
-  if (Math.random() > 0.3) return ["Laptop", "Monitor"];
-  throw new Error("Product API error.");
-}
-
-async function fetchOrders(): Promise<number[]> {
-  await new Promise(r => setTimeout(r, 80));
-  return [101, 102];
-}
-
-async function loadDashboardData() {
-  const [productsResp, ordersResp] = await Promise.all([
-    trySafely(() => fetchProducts()), // Using trySafely for function wrapper
-    tryPromise(fetchOrders())          // Using tryPromise for direct promise
-  ]);
-
-  if (productsResp.error) {
-    console.error("Products failed:", productsResp.error.message);
-  } else {
-    console.log("Products loaded:", productsResp.result);
-  }
-
-  if (ordersResp.error) {
-    console.error("Orders failed:", ordersResp.error.message); // This path unlikely for 'fetchOrders'
-  } else {
-    console.log("Orders loaded:", ordersResp.result);
-  }
-}
-loadDashboardData();
-```
-
----
-
-## Why `trysafely`?
-
-Traditional `try...catch` blocks can become verbose, especially when dealing with many async operations or `Promise.all`. `trysafely` provides a functional alternative, aligning with common patterns found in languages like Go (e.g., `value, err := func()`) where errors are returned as explicit values rather than thrown exceptions. This leads to:
-
-*   **Readability:** Easier to follow the happy path and immediately see where errors are handled.
-*   **Predictability:** Your functions will always resolve, never reject, making subsequent `await` calls safer.
-*   **Maintainability:** Less nested code, simpler error propagation, and clearer responsibility.
+------
 
 ## Installation
 
@@ -166,16 +28,165 @@ yarn add trysafely
 pnpm add trysafely
 ```
 
-## Contributing
+------
 
-Contributions are welcome! If you have suggestions, bug reports, or want to contribute code, please feel free to open an issue or pull request on the [GitHub repository](https://github.com/EllyBax/trysafely.git).
+## API
+
+### `trySafely(fn: () => T | Promise<T>)`
+
+> Smart wrapper for **both sync and async** functions. Determines if the function is returning a Promise, and handles errors accordingly.
+
+```ts
+import trySafely from 'trysafely';
+
+const { data, err } = await trySafely(asyncOrSyncFn());
+```
+
+------
+
+### `tryAsync(fn: () => Promise<T>)`
+
+> Specifically wraps an **async function**, catching any thrown or rejected errors.
+
+```ts
+import { tryAsync } from 'trysafely';
+
+const { data, err } = await tryAsync(someAsyncFunction());
+```
+
+------
+
+### `trySync(fn: () => T)`
+
+> Specifically wraps a **synchronous function**, catching exceptions.
+
+```ts
+import { trySync } from 'trysafely';
+
+const { data, err } = trySync(someSyncFunction());
+```
+
+------
+
+## Examples
+
+### Universal Function: `trySafely`
+
+```ts
+import trySafely from 'trysafely';
+
+/** Example that may return synchronously or asynchronously */
+async function getUser(): Promise<string> {
+  await new Promise(r => setTimeout(r, 100));
+  if (Math.random() > 0.5) return "Alice";
+  throw new Error("User not found");
+}
+
+async function main() {
+  const { data: user, err } = await trySafely(getUser());
+
+  if (err) {
+    console.error("Error fetching user:", err.message);
+  } else {
+    console.log("Fetched user:", user);
+  }
+}
+```
+
+------
+
+### `tryAsync` Example
+
+```ts
+import { tryAsync } from 'trysafely';
+
+/** Simulates an async failure */
+async function loadData(): Promise<number> {
+  throw new Error("Load failed");
+}
+
+async function run() {
+  const { data, err } = await tryAsync(loadData());
+
+  if (err) {
+    console.error("Load Error:", err.message);
+  } else {
+    console.log("Loaded:", data);
+  }
+}
+```
+
+------
+
+### `trySync` Example
+
+```ts
+import { trySync } from 'trysafely';
+
+/** Synchronous function that may throw */
+function riskyOperation(): number {
+  if (Math.random() > 0.5) return 42;
+  throw new Error("Boom");
+}
+
+const { data, err } = trySync(riskyOperation());
+
+if (err) {
+  console.error("Sync error:", err.message);
+} else {
+  console.log("Sync result:", data);
+}
+```
+
+------
+
+## Return Type
+
+Every function returns:
+
+```ts
+type TryResult<T> = {
+  data: T | null;
+  err: Error | null;
+};
+```
+
+This helps keep control flow **flat and readable**, especially in concurrent or nested logic.
+
+------
+
+## TypeScript Support
+
+All functions are fully typed. Errors are always of type `Error`, and results are `T | null`. No more `any` surprises or missing catches.
+
+------
+
+## What's New in 4.0
+
+- ✅ Unified `trySafely` now supports both sync and async functions
+- ✅ Explicit `tryAsync` and `trySync` utilities included
+- ❌ `tryPromise` deprecated — use `trySafely(() => promise)` instead
+- 📦 Clean, small footprint
+
+------
 
 ## What's Next?
 
-*   [ ] Add synchronous function support (e.g., `trysyncly` for non-async functions that might throw).
-*   [ ] Enhance documentation with more advanced use cases and examples.
-*   [ ] Explore error type refinement (e.g., custom error types or more precise error handling).
+-  Add optional fallback/default values in case of error
+-  Better error classification (e.g., custom error types, tagging)
+-  Performance benchmarks and tree-shaking guides
+-  `trysafely.allSettled()` for batches
+
+------
+
+## Contributing
+
+Contributions, bug reports, and feedback are welcome!
+ Feel free to open an issue or PR on [GitHub](https://github.com/EllyBax/trysafely.git).
+
+------
 
 ## License
 
-`trysafely` is [MIT licensed](LICENSE).
+MIT © [Elly Bax](https://github.com/EllyBax)
+ See LICENSE for details.
